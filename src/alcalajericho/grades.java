@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package alcalajericho;
 import java.util.Scanner;
 public class grades {
@@ -19,7 +15,7 @@ public class grades {
         this.f =fnl;
     }
     
-    public void viewGrades(int id) {
+    public void viewGrades() {
         double average= (this.p + this.m + this.pf + this.f) / 4;
         String remarks=(average > 3.0) ? "Failed": "Passed";
         
