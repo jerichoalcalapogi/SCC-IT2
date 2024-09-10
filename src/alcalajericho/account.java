@@ -1,80 +1,142 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package alcalajericho;
 
 import java.util.Arrays;
+import java.util.Scanner;
 
-/**
- *
- * @author SCC-COLLEGE
- */
 public class account {
-     int id;
-    String fname, lname, email, username, pass;
-
-
-    public void addAccount(int id, String fname, String lname, String email, String username, String password) {
-        this.id = id;
-        this.fname = fname;
-        this.lname = lname;
-        this.email = email;
-        this.username = username;
-        this.pass = password;
+    Scanner sc = new Scanner(System.in);
+    accounts[] acs = new accounts[100];
+    
+    public void getAccounts(){
+        
+        System.out.println("Running Account Program: \n");
+        System.out.print("Add number of users: ");
+        int user = sc.nextInt();
+        
+        for(int i = 0; i < user; i++){
+            System.out.println("\nEnter details of User "+(i+1));
+            System.out.print("ID: ");
+            int ID = sc.nextInt();
+            
+            while(verifyID(ID,i)){
+                ID = sc.nextInt();
+            }
+            
+            sc.nextLine();
+            System.out.print("first name: ");
+            String fName = sc.nextLine();
+            System.out.print("last name: ");
+            String lName = sc.nextLine();
+            System.out.print("email: ");
+            String Eadd = sc.next();
+            
+            while(verifyEmail(Eadd, i)){
+                Eadd = sc.next();
+            }
+            
+            System.out.print("username: ");
+            String usern = sc.next();
+            
+            while(verifyUser(usern, i)){
+                usern = sc.next();
+            }
+            
+            System.out.println("\nPassword criterea:"
+                    + "\n1. Must be above 8 characters"
+                    + "\n2. Must have at least 1 upper & 1 lower case letters"
+                    + "\n3. Must have at least 1 number"
+                    + "\n4. Must have at least 1 special character"
+                    + "\n5. Must not have common password names like 'admin', password', and '1234'");
+            
+            System.out.print("\nPassword: ");
+            String passw = sc.next();
+            
+            while(!passwordVerify(passw)){
+                System.out.print("\nPassword: ");
+                passw = sc.next();
+            }
+            
+            acs[i] = new accounts();
+            acs[i].addAccounts(ID, fName, lName, Eadd, usern, passw);
+        }
+        
+        System.out.printf("\n\n%-5s %-10s %-10s %-20s %-10s %-10s\n","ID", "First Name", "Last Name", "Email", "Username", "Password");
+        
+        for(int i = 0; i < user; i++){
+            acs[i].viewAccounts();
+        }
     }
-
-
-    public void viewAccount() {
-        System.out.printf("%-10d %-10s %-10s %-20s %-13s %-10s\n",
-            this.id, this.fname, this.lname, this.email, this.username, this.pass);
-    }
-
-
-    public boolean passwordVerify(String password) {
-        char element;
-        int digit = 0, upperCase = 0;
-        String[] commonPasswords = {"admin", "1234", "password"};
-
-
-        if (password.length() < 8) {
-            System.out.println("Password must have at least 8 characters.");
+    
+    // <editor-fold defaultstate="collapsed" desc="Validation">
+    private boolean passwordVerify(String password){
+        if(!(password.length() > 8)){
+            System.out.println("\nPassword is invalid, password must be above 8 characters");
             return false;
         }
-
-
-        if (Arrays.asList(commonPasswords).contains(password)) {
-            System.out.println("Password is too common.");
+        
+        if(password.equals("admin") || password.equals("password") || password.equals("1234")){
+            System.out.println("\nPassword is invalid, password must not contains common passwords like 'admin', 'password', and '1234'");
             return false;
         }
-
-
-        for (int x = 0; x < password.length(); x++) {
-            element = password.charAt(x);
-            if (Character.isDigit(element)) {
-                digit++;
-            } else if (Character.isUpperCase(element)) {
-                upperCase++;
+        
+        boolean hasUppercase = false;
+        boolean hasLowercase = false;
+        boolean hasDigit = false;
+        boolean hasSpecialchar = false;
+        
+        for(char c : password.toCharArray()){
+            if(Character.isLowerCase(c)){
+                hasLowercase = true;
+            } else if(Character.isUpperCase(c)){
+                hasUppercase = true;
+            } else if(Character.isDigit(c)){
+                hasDigit = true;
+            } else if(!Character.isLetterOrDigit(c)){
+                hasSpecialchar = true;
             }
         }
-
-        if (upperCase == 0) {
-            System.out.println("Password must contain at least one uppercase letter.");
-            return false;
-        }
-
-        if (digit == 0) {
-            System.out.println("Password must contain at least one number.");
-            return false;
-        }
-
         
-        if (password.matches("[a-zA-Z0-9]+")) {
-            System.out.println("Password must contain at least one special character.");
+        if(!(hasUppercase && hasLowercase)){
+            System.out.println("\nPassword is invalid, must have 1 upper and l lower case letters");
+            return false;
+        } else if(!hasDigit){
+            System.out.println("\nPassword is invalid, must have at least 1 number");
+            return false;
+        } else if(!hasSpecialchar){
+            System.out.println("\nPassword is invalid, must have at least 1 special character");
             return false;
         }
-
         return true;
-}
+    }
+    
+    private boolean verifyID(int id, int max){
+        for(int j = 0; j < max; j++){
+            if(id==acs[j].aid){
+                System.out.print("Input invalid: must not have a duplicated ID, try again: ");
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean verifyEmail(String email, int max){
+        for(int j = 0; j < max; j++){
+            if(email.equals(acs[j].email)){
+                System.out.print("Input invalid: Must not have a duplicated email, try again: ");
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean verifyUser(String user, int max){
+        for(int j = 0; j < max; j++){
+            if(user.equals(acs[j].user)){
+                System.out.print("Input Invalid: Must not have a duplicated user, try again: ");
+                return true;
+            }   
+        }
+        return false;
+    }// </editor-fold> 
 }
